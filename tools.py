@@ -55,3 +55,6 @@ def scrape_url(url: str) -> str:
         return f"Could not scrape URL: {str(e)}"
 
 # print(scrape_url.invoke("https://www.cricbuzz.com/cricket-news/140231/athapaththu-fires-sri-lanka-into-asian-games-final"))
+
+
+print(web_search.args_schema.model_json_schema())
