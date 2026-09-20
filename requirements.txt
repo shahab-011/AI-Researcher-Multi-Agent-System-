@@ -1,0 +1,40 @@
+# ==========================================
+# Multi-Agent Research System
+# ==========================================
+
+# ---------- LangChain Core ----------
+langchain
+langchain-core
+langchain-community
+
+# ---------- Groq / LLM ----------
+langchain-groq
+groq
+
+# ---------- Web Search ----------
+tavily-python
+langchain-tavily
+
+# ---------- Web Scraping ----------
+beautifulsoup4
+requests
+
+# ---------- Environment Variables ----------
+python-dotenv
+
+# ---------- ReAct / Agent Utilities ----------
+langgraph
+
+# ---------- Structured Data / Validation ----------
+pydantic
+pydantic-settings
+
+# ---------- HTTP / Async Support ----------
+httpx
+aiohttp
+
+# ---------- Optional: HTML Parsing ----------
+lxml
+
+# ---------- Development / Debugging ----------
+rich
