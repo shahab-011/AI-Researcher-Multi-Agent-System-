@@ -252,3 +252,8 @@ def research_stream(request: ResearchRequest):
             "X-Accel-Buffering": "no",
         },
     )
+
+
+@app.get("/")
+def root():
+    return {"message": "API is running"}
