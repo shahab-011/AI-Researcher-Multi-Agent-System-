@@ -55,17 +55,16 @@ function App() {
       });
 
   const renderReport = (report) => {
-    const lines = String(report || "").split(/\r?\n/);
+    const lines = formatReportText(report);
     return lines.map((line, index) => {
       const text = line.trim();
       if (!text) return <div className="report-spacer" key={`space-${index}`}></div>;
-      const heading = cleanMarkdown(text.replace(/^#{1,3}\s+/, "").replace(/:$/, ""));
-      const isHeading = /^(introduction|key findings|conclusion|sources|overview|summary)$/i.test(heading);
-      if (isHeading || /^#{1,3}\s+/.test(text)) {
+      const isHeading = /^(introduction|key findings|conclusion|sources|overview|summary)$/i.test(text);
+      if (isHeading) {
         return (
           <h3 className="report-heading" key={`heading-${index}`} style={{ animationDelay: `${index * 0.04}s` }}>
             <span className="heading-mark" aria-hidden="true"></span>
-            {heading}
+            {text}
           </h3>
         );
       }
@@ -185,11 +184,12 @@ function App() {
     const contentWidth = pageWidth - margin * 2;
     let y = margin;
 
-    const addText = (text, size, font, spacing) => {
-      pdf.setFont("helvetica", font);
+    const addText = (text, size, fontStyle, color, spacing) => {
+      pdf.setFont("helvetica", fontStyle);
       pdf.setFontSize(size);
+      pdf.setTextColor(...color);
       const lines = pdf.splitTextToSize(text, contentWidth);
-      const lineHeight = size * 1.45;
+      const lineHeight = size * 1.5;
       if (y + lines.length * lineHeight > pageHeight - margin) {
         pdf.addPage();
         y = margin;
@@ -198,9 +198,16 @@ function App() {
       y += lines.length * lineHeight + spacing;
     };
 
-    pdf.setTextColor(45, 48, 65);
-    addText("Research Report", 22, "bold", 8);
-    addText(research.topic, 11, "normal", 20);
+    const addPageNumber = () => {
+      const pageNumber = pdf.getNumberOfPages();
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(9);
+      pdf.setTextColor(120, 126, 140);
+      pdf.text(`Page ${pageNumber}`, pageWidth - margin, pageHeight - 22, { align: "right" });
+    };
+
+    addText("Research Report", 22, "bold", [34, 39, 54], 8);
+    addText(research.topic, 11, "normal", [100, 106, 120], 24);
 
     formatReportText(research.report).forEach((line) => {
       if (!line) {
@@ -210,14 +217,17 @@ function App() {
       const isHeading = /^(introduction|key findings|conclusion|sources|overview|summary)$/i.test(line);
       const isBullet = line.startsWith("- ");
       if (isHeading) {
-        addText(line, 15, "bold", 8);
+        addText(line, 15, "bold", [34, 39, 54], 9);
       } else if (isBullet) {
-        addText(`• ${line.slice(2)}`, 10.5, "normal", 4);
+        addText(`• ${line.slice(2)}`, 10.5, "normal", [65, 71, 84], 5);
       } else {
-        addText(line, 10.5, "normal", 5);
+        addText(line, 10.5, "normal", [65, 71, 84], 6);
       }
+
+      addPageNumber();
     });
 
+    addPageNumber();
     pdf.save("research-report.pdf");
   };
 
