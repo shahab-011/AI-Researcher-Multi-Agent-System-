@@ -1,4 +1,5 @@
 import json
+import os
 import queue
 import threading
 
@@ -51,7 +52,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        os.getenv("FRONTEND_URL", "").rstrip("/"),
     ],
+    allow_origin_regex=r"https://.*\.netlify\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -9,6 +9,8 @@ const INITIAL_AGENTS = [
   { id: "critic", icon: "🧠", name: "Critic Agent", description: "Waiting", status: "idle" },
 ];
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+
 function App() {
   const [page, setPage] = useState("research");
   const [topic, setTopic] = useState("");
@@ -122,7 +124,7 @@ function App() {
     );
 
     try {
-      const response = await fetch("/api/research/stream", {
+      const response = await fetch(`${API_BASE_URL}/api/research/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic: topic.trim() }),
@@ -161,7 +163,11 @@ function App() {
         processEvent(buffer);
       }
     } catch (err) {
-      setError(err.message || "Something went wrong while generating the report.");
+      setError(
+        err.message === "Failed to fetch"
+          ? "Unable to reach the research API. Check the deployed backend URL."
+          : err.message || "Something went wrong while generating the report."
+      );
     } finally {
       setLoading(false);
     }
