@@ -10,6 +10,27 @@ from pydantic import BaseModel
 from pipeline import run_research_pipeline
 
 
+def user_facing_error(error: Exception) -> str:
+    """Convert transient upstream failures into actionable UI messages."""
+    message = str(error)
+
+    if any(
+        phrase in message.lower()
+        for phrase in (
+            "remote end closed connection",
+            "connection aborted",
+            "connection reset",
+            "timed out",
+        )
+    ):
+        return (
+            "An external research service closed the connection. "
+            "Please wait a moment and try again."
+        )
+
+    return message or "The research pipeline could not be completed."
+
+
 # =========================================================
 # FASTAPI APP
 # =========================================================
@@ -168,7 +189,7 @@ def research_stream(request: ResearchRequest):
 
             event_queue.put({
                 "type": "error",
-                "message": str(e),
+                "message": user_facing_error(e),
             })
 
         finally:
